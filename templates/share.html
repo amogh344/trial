@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Experience</title>
+    <link rel="stylesheet" href="/static/styles2.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Share Your Experience</h1>
+            <p>Express yourself anonymously</p>
+        </header>
+
+        <main>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>How are you feeling?</label>
+                    <div class="emotion-selector">
+                        <input type="radio" name="emotion" id="happy" value="happy" checked>
+                        <label for="happy" class="emotion-option">
+                            <img src="/static/assets/happy.svg" alt="Happy">
+                            <span>Happy</span>
+                        </label>
+
+                        <input type="radio" name="emotion" id="sad" value="sad">
+                        <label for="sad" class="emotion-option">
+                            <img src="/static/assets/sad.svg" alt="Sad">
+                            <span>Sad</span>
+                        </label>
+
+                        <input type="radio" name="emotion" id="angry" value="angry">
+                        <label for="angry" class="emotion-option">
+                            <img src="/static/assets/angry.svg" alt="Angry">
+                            <span>Angry</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">What would you like to share?</label>
+                    <textarea id="content" name="content" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Share Anonymously</button>
+            </form>
+
+            <div id="responseSection" class="hidden">
+                <div class="response-card">
+                    <h3>Supportive Response</h3>
+                    <p id="aiResponse"></p>
+                </div>
+
+                <div class="response-card">
+                    <h3>Similar Experiences</h3>
+                    <div id="similarPosts" class="posts-grid"></div>
+                </div>
+
+                <div class="response-card">
+                    <h3>Suggestions For You</h3>
+                    <ul id="suggestions"></ul>
+                </div>
+
+                <a href="/community.html" class="btn btn-secondary">Browse More Stories</a>
+            </div>
+        </main>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

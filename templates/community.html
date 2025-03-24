@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Support</title>
+    <link rel="stylesheet" href="/static/styles2.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Community Support</h1>
+            <p>Read anonymous experiences from others</p>
+        </header>
+
+        <main>
+            <div class="filter-section">
+                <select id="emotionFilter">
+                    <option value="">All Emotions</option>
+                    <option value="happy">Happy</option>
+                    <option value="sad">Sad</option>
+                    <option value="angry">Angry</option>
+                </select>
+                <button id="filterBtn" class="btn btn-secondary">Filter</button>
+            </div>
+
+            <div id="postsContainer" class="posts-grid">
+                <!-- Posts will be loaded here -->
+            </div>
+
+            <div class="cta-section">
+                <a href="/share.html" class="btn btn-primary">Share Your Own Experience</a>
+            </div>
+        </main>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

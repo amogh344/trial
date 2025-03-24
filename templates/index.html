@@ -1,0 +1,172 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Idea Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Blog Idea Generator</h1>
+            <p>Get creative blog post ideas for your content creation needs</p>
+        </header>
+
+        <div class="form-container">
+            <form id="ideaForm">
+                <div class="form-group">
+                    <label for="niche">Your Content Niche:</label>
+                    <input type="text" id="niche" name="niche" required 
+                           placeholder="e.g., fitness, digital marketing, personal finance">
+                </div>
+
+                <div class="form-group">
+                    <label for="num_ideas">Number of Ideas:</label>
+                    <select id="num_ideas" name="num_ideas">
+                        <option value="1">1</option>
+                        <option value="3" selected>3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Content Tone:</label>
+                    <select id="tone" name="tone">
+                        <option value="professional" selected>Professional</option>
+                        <option value="casual">Casual</option>
+                        <option value="humorous">Humorous</option>
+                        <option value="inspirational">Inspirational</option>
+                        <option value="educational">Educational</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="include_outline" name="include_outline" checked>
+                    <label for="include_outline">Include Post Outlines</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="model">LLM Model:</label>
+                    <select id="model" name="model">
+                        <!-- Will be populated from API -->
+                        <option value="mistral" selected>mistral</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="generateBtn">Generate Ideas</button>
+            </form>
+        </div>
+
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h2>Your Blog Ideas</h2>
+            <div id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating ideas...</p>
+            </div>
+            <div id="results">
+                <!-- Results will appear here -->
+            </div>
+            <button id="copyBtn">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Fetch available models when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/models');
+                const data = await response.json();
+                const modelSelect = document.getElementById('model');
+                
+                // Clear existing options
+                modelSelect.innerHTML = '';
+                
+                // Add each model as an option
+                data.models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching models:', error);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            // Show loading indicator
+            resultsContainer.style.display = 'block';
+            loading.style.display = 'block';
+            results.innerHTML = '';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Format and display the results
+                results.innerHTML = formatResponseWithMarkdown(data.generated_ideas);
+                
+            } catch (error) {
+                results.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Copy results to clipboard
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const results = document.getElementById('results').innerText;
+            navigator.clipboard.writeText(results)
+                .then(() => {
+                    const copyBtn = document.getElementById('copyBtn');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+        
+        // Simple function to format text with basic markdown
+        function formatResponseWithMarkdown(text) {
+            // Handle line breaks
+            let formatted = text.replace(/\n/g, '<br>');
+            
+            // Format titles/headings (# Title)
+            formatted = formatted.replace(/#{1,6}\s+(.*?)(?:<br>|$)/g, '<h3>$1</h3>');
+            
+            // Format list items
+            formatted = formatted.replace(/(\d+\.\s+)(.*?)(?:<br>|$)/g, '<div class="list-item"><span class="list-number">$1</span>$2</div>');
+            
+            // Bold text
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Italic text
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            return formatted;
+        }
+    </script>
+</body>
+</html>
